@@ -21,7 +21,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Setup event handlers
     let events = Events::new();
 
-    let mut arr_state = helper::shuffle_arr(&mut rand::thread_rng());
+    let mut arr_state = helper::shuffle_arr(&mut rand::thread_rng())?;
 
     loop {
         terminal.draw(|mut f| {

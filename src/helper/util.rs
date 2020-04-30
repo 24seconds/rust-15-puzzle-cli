@@ -1,7 +1,7 @@
 use rand::{rngs::ThreadRng, seq::SliceRandom};
 use std::error::Error;
 
-pub fn shuffle_arr(rng: &mut ThreadRng) -> [u16; 16] {
+pub fn shuffle_arr(rng: &mut ThreadRng) -> Result<[u16; 16], Box<dyn Error>> {
     let mut arr = [0; 16];
 
     (0..16).into_iter().enumerate().for_each(|args| {
@@ -10,9 +10,15 @@ pub fn shuffle_arr(rng: &mut ThreadRng) -> [u16; 16] {
         arr[index] = number;
     });
 
-    arr.shuffle(rng);
+    loop {
+        arr.shuffle(rng);
 
-    arr
+        if is_solvable(&arr)? {
+            break;
+        }
+    }
+
+    Ok(arr)
 }
 
 fn is_solvable(arr: &[u16; 16]) -> Result<bool, Box<dyn Error>> {
