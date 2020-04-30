@@ -76,7 +76,7 @@ pub enum Operation {
     RIGHT,
 }
 
-pub fn move_cell(arr: &[u16; 16], operation: Operation) -> Result<[u16; 16], Box<dyn Error>> {
+pub fn move_tile(arr: &[u16; 16], operation: Operation) -> Result<[u16; 16], Box<dyn Error>> {
     let mut next_arr = [0; 16];
 
     arr.iter().enumerate().for_each(|args| {
@@ -226,7 +226,7 @@ mod tests {
     }
 
     #[test]
-    fn move_cell_should_generate_correct_arr() -> Result<(), Box<dyn Error>> {
+    fn move_tile_should_generate_correct_arr() -> Result<(), Box<dyn Error>> {
         let mut rng = rand::thread_rng();
         let mut arr = shuffle_arr(&mut rng)?;
 
@@ -242,7 +242,7 @@ mod tests {
                 _ => Operation::UP,
             };
 
-            arr = move_cell(&arr, operation)?;
+            arr = move_tile(&arr, operation)?;
         }
 
         Ok(())

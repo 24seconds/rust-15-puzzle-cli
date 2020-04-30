@@ -1,5 +1,5 @@
 mod helper;
-use helper::{draw_board, move_cell, Event, Events, Operation};
+use helper::{draw_board, move_tile, Event, Events, Operation};
 
 use std::{error::Error, io};
 use termion::{event::Key, input::MouseTerminal, raw::IntoRawMode, screen::AlternateScreen};
@@ -62,16 +62,16 @@ fn main() -> Result<(), Box<dyn Error>> {
                     break;
                 }
                 Key::Char('w') | Key::Up => {
-                    arr_state = move_cell(&arr_state, Operation::UP)?;
+                    arr_state = move_tile(&arr_state, Operation::UP)?;
                 }
                 Key::Char('a') | Key::Left => {
-                    arr_state = move_cell(&arr_state, Operation::LEFT)?;
+                    arr_state = move_tile(&arr_state, Operation::LEFT)?;
                 }
                 Key::Char('s') | Key::Down => {
-                    arr_state = move_cell(&arr_state, Operation::DOWN)?;
+                    arr_state = move_tile(&arr_state, Operation::DOWN)?;
                 }
                 Key::Char('d') | Key::Right => {
-                    arr_state = move_cell(&arr_state, Operation::RIGHT)?;
+                    arr_state = move_tile(&arr_state, Operation::RIGHT)?;
                 }
                 _ => {}
             },
