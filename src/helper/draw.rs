@@ -35,8 +35,8 @@ where
         (3, 3),
     ];
 
-    board.iter().zip(arr.iter()).for_each(|x| {
-        let (multiplier, number) = x;
+    board.iter().zip(arr.iter()).enumerate().for_each(|x| {
+        let (index, (multiplier, number)) = x;
         let width = length + 3;
         let height = length;
         let area = Rect::new(
@@ -46,9 +46,17 @@ where
             height,
         );
 
+        let style_selected = Style::default().fg(if index as u16 + 1 == *number && *number != 0 {
+            // orange
+            Color::Rgb(232, 138, 69)
+        } else {
+            Color::White
+        });
+
         let block = Block::default()
             .borders(Borders::ALL)
-            .border_type(BorderType::Rounded);
+            .border_type(BorderType::Rounded)
+            .border_style(style_selected);
 
         let number_string = if *number == 0 {
             String::from("")
@@ -58,7 +66,7 @@ where
 
         let text = [Text::styled(
             number_string,
-            Style::default().fg(Color::White),
+            style_selected,
         )];
         let paragraph = Paragraph::new(text.iter())
             .block(block)
