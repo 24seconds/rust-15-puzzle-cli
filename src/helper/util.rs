@@ -1,4 +1,4 @@
-use rand::{rngs::ThreadRng, seq::SliceRandom};
+use rand::{rngs::ThreadRng, seq::SliceRandom, Rng};
 use std::error::Error;
 
 pub fn shuffle_arr(rng: &mut ThreadRng) -> Result<[u16; 16], Box<dyn Error>> {
@@ -68,6 +68,72 @@ fn count_inversion(arr: &[u16; 16]) -> u16 {
 
     count
 }
+
+pub enum Operation {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+}
+
+pub fn move_cell(arr: &[u16; 16], operation: Operation) -> Result<[u16; 16], Box<dyn Error>> {
+    let mut next_arr = [0; 16];
+
+    arr.iter().enumerate().for_each(|args| {
+        let (index, number) = args;
+        next_arr[index] = *number;
+    });
+
+    let index_blank = arr.iter().position(|x| *x == 0).ok_or("There is no blank!")?;
+    let arr_length = arr.len();
+
+    match operation {
+        Operation::UP => {
+            let index_to_swap = index_blank + 4;
+
+            if index_to_swap < arr_length {
+                let temp = next_arr[index_blank];
+                next_arr[index_blank] = next_arr[index_to_swap];
+                next_arr[index_to_swap] = temp;
+            }
+        }
+        Operation::DOWN => {
+            let index_to_swap = index_blank as i32 - 4;
+
+            if index_to_swap >= 0 {
+                let index_to_swap = index_to_swap as usize;
+                let temp = next_arr[index_blank];
+
+                next_arr[index_blank] = next_arr[index_to_swap];
+                next_arr[index_to_swap] = temp;
+            }
+        }
+        Operation::LEFT => {
+            let index_to_swap = index_blank + 1;
+
+            if index_to_swap < arr_length && index_blank % 4 != 3 {
+                let temp = next_arr[index_blank];
+                next_arr[index_blank] = next_arr[index_to_swap];
+                next_arr[index_to_swap] = temp;
+            }
+        }
+        Operation::RIGHT => {
+            let index_to_swap = index_blank as i32 -1;
+
+            if index_to_swap >= 0 && index_blank % 4 != 0 {
+                let index_to_swap = index_to_swap as usize;
+                let temp = next_arr[index_blank];
+
+                next_arr[index_blank] = next_arr[index_to_swap];
+                next_arr[index_to_swap] = temp;
+            }
+        }
+    };
+
+    Ok(next_arr)
+}
+
+
 
 #[cfg(test)]
 mod tests {
@@ -153,6 +219,29 @@ mod tests {
                 let is_solvable = is_solvable(test)?;
                 assert_eq!(is_solvable, true);
             }
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn move_cell_should_generate_correct_arr() -> Result<(), Box<dyn Error>> {
+        let mut rng = rand::thread_rng();
+        let mut arr = shuffle_arr(&mut rng)?;
+
+        for _ in 0..10_000 {
+            assert_eq!(is_solvable(&arr)?, true);
+
+            let random_number = rng.gen_range(0, 4);
+            let operation = match random_number {
+                0 => Operation::UP,
+                1 => Operation::DOWN,
+                2 => Operation::LEFT,
+                3 => Operation::RIGHT,
+                _ => Operation::UP,
+            };
+
+            arr = move_cell(&arr, operation)?;
         }
 
         Ok(())
