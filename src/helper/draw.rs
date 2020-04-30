@@ -8,7 +8,7 @@ use tui::{
 };
 
 pub fn draw_board<B>(
-    arr: [i32; 16],
+    arr: &[u16; 16],
     frame: &mut Frame<B>,
     area: &Rect,
     length: u16,

@@ -21,6 +21,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Setup event handlers
     let events = Events::new();
 
+    let mut arr_state = helper::shuffle_arr(&mut rand::thread_rng());
+
     loop {
         terminal.draw(|mut f| {
             let chunks = Layout::default()
@@ -49,8 +51,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .split(chunks[1]);
 
             {
-                let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
-                draw_board(arr, &mut f, &chunks[1], 5).unwrap();
+                // let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
+                draw_board(&arr_state, &mut f, &chunks[1], 5).unwrap();
             }
         })?;
 
