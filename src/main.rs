@@ -1,5 +1,5 @@
 mod helper;
-use helper::{draw_board, move_cell, Operation, Event, Events};
+use helper::{draw_board, move_cell, Event, Events, Operation};
 
 use std::{error::Error, io};
 use termion::{event::Key, input::MouseTerminal, raw::IntoRawMode, screen::AlternateScreen};

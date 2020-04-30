@@ -73,7 +73,7 @@ pub enum Operation {
     UP,
     DOWN,
     LEFT,
-    RIGHT
+    RIGHT,
 }
 
 pub fn move_cell(arr: &[u16; 16], operation: Operation) -> Result<[u16; 16], Box<dyn Error>> {
@@ -84,7 +84,10 @@ pub fn move_cell(arr: &[u16; 16], operation: Operation) -> Result<[u16; 16], Box
         next_arr[index] = *number;
     });
 
-    let index_blank = arr.iter().position(|x| *x == 0).ok_or("There is no blank!")?;
+    let index_blank = arr
+        .iter()
+        .position(|x| *x == 0)
+        .ok_or("There is no blank!")?;
     let arr_length = arr.len();
 
     match operation {
@@ -118,7 +121,7 @@ pub fn move_cell(arr: &[u16; 16], operation: Operation) -> Result<[u16; 16], Box
             }
         }
         Operation::RIGHT => {
-            let index_to_swap = index_blank as i32 -1;
+            let index_to_swap = index_blank as i32 - 1;
 
             if index_to_swap >= 0 && index_blank % 4 != 0 {
                 let index_to_swap = index_to_swap as usize;
@@ -132,8 +135,6 @@ pub fn move_cell(arr: &[u16; 16], operation: Operation) -> Result<[u16; 16], Box
 
     Ok(next_arr)
 }
-
-
 
 #[cfg(test)]
 mod tests {
