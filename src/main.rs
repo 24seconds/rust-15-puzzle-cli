@@ -5,7 +5,7 @@ use helper::{
 };
 
 use std::{error::Error, io, time::Instant};
-use termion::{event::Key, input::MouseTerminal, raw::IntoRawMode, screen::AlternateScreen};
+use termion::{event::Key, raw::IntoRawMode, screen::AlternateScreen};
 use tui::{
     backend::TermionBackend,
     layout::{Constraint, Direction, Layout, Margin},
@@ -17,7 +17,6 @@ use tui::{
 fn main() -> Result<(), Box<dyn Error>> {
     // Terminal initialization
     let stdout = io::stdout().into_raw_mode()?;
-    // let stdout = MouseTerminal::from(stdout);
     let stdout = AlternateScreen::from(stdout);
     let backend = TermionBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
@@ -158,7 +157,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
                 _ => {}
             },
-            _ => {}
         }
     }
     Ok(())

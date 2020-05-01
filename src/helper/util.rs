@@ -1,4 +1,4 @@
-use rand::{rngs::ThreadRng, seq::SliceRandom, Rng};
+use rand::{rngs::ThreadRng, seq::SliceRandom};
 use std::{error::Error, time::Instant};
 
 #[derive(PartialEq)]
