@@ -253,6 +253,7 @@ fn is_done(arr_state: &[u16; 16]) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rand::{Rng};
 
     #[test]
     fn count_inversion_should_correct() {
