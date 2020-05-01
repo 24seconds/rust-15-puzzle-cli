@@ -119,7 +119,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-15puzzle-cli"
+name = "rust-15-puzzle-cli"
 version = "0.1.0"
 dependencies = [
  "rand",

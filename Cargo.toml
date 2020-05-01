@@ -1,5 +1,5 @@
 [package]
-name = "rust-15puzzle-cli"
+name = "rust-15-puzzle-cli"
 version = "0.1.0"
 authors = ["24seconds <24crazyoung@gmail.com>"]
 edition = "2018"
