@@ -22,8 +22,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Setup event handlers
     let events = Events::new();
+    let mut rng = rand::thread_rng();
 
-    let mut arr_state = helper::shuffle_arr(&mut rand::thread_rng())?;
+    let mut arr_state = helper::shuffle_arr(&mut rng)?;
     let mut vec_solve_move: Vec<Operation> = Vec::new();
     let mut start_time = Instant::now();
     let mut move_count = 0;
@@ -114,6 +115,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Key::Char('d') | Key::Right => {
                     arr_state = move_tile(&arr_state, Operation::RIGHT)?;
                     move_count += 1;
+                }
+                Key::Char('r') => {
+                    move_count = 0;
+                    start_time = Instant::now();
+                    arr_state = helper::shuffle_arr(&mut rng)?;
                 }
                 _ => {}
             },
