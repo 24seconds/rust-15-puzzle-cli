@@ -84,36 +84,11 @@ pub fn update_elapsed_time(game_data: &GameData, next_game_state: &GameState) ->
 
     let mut updated_base_time = base_time;
 
-    eprintln!("\n-------------------------");
-
-    match game_state {
-        GameState::INIT => eprintln!("game_state : init"),
-        GameState::PLAYING => eprintln!("game_state : playing"),
-        GameState::PAUSED => eprintln!("game_state : pause"),
-        GameState::DONE => eprintln!("game_state : done"),
-    }
-
-    match next_game_state {
-        GameState::INIT => eprintln!("next_game_state : init"),
-        GameState::PLAYING => eprintln!("next_game_state : playing"),
-        GameState::PAUSED => eprintln!("next_game_state : pause"),
-        GameState::DONE => eprintln!("next_game_state : done"),
-    }
-
     if game_state == &GameState::PLAYING
         && (next_game_state == &GameState::PAUSED || next_game_state == &GameState::DONE)
     {
         updated_base_time = base_time + start_time.elapsed().as_secs();
     }
-
-    eprintln!(
-        "base_time : {}, elapsed: {}",
-        base_time,
-        start_time.elapsed().as_secs()
-    );
-    eprintln!("updated_base_time : {}", updated_base_time);
-
-    eprintln!("-------------------------");
 
     updated_base_time
 }
@@ -271,8 +246,6 @@ fn is_done(arr_state: &[u16; 16]) -> bool {
             x + 1 == arr_state[x as usize]
         }
     });
-
-    eprintln!("arr_state: {:?}, result : {}", &arr_state, result);
 
     result
 }
