@@ -1,3 +1,4 @@
+use crate::helper::GameState;
 use std::error::Error;
 use tui::{
     backend::Backend,
@@ -64,7 +65,10 @@ where
             format!("\n{}", number)
         };
 
-        let text = [Text::styled(number_string, style_selected.modifier(Modifier::BOLD))];
+        let text = [Text::styled(
+            number_string,
+            style_selected.modifier(Modifier::BOLD),
+        )];
         let paragraph = Paragraph::new(text.iter())
             .block(block)
             .alignment(Alignment::Center);
@@ -94,6 +98,44 @@ Commands
         .title("rust-15-puzzle : v0.1.0")
         .title_style(Style::default().modifier(Modifier::BOLD));
     let text = [Text::styled(guide, Style::default().fg(Color::LightBlue))];
+    let paragraph = Paragraph::new(text.iter())
+        .block(block)
+        .alignment(Alignment::Left);
+
+    frame.render_widget(paragraph, *area);
+
+    Ok(())
+}
+
+pub fn draw_header<B>(
+    frame: &mut Frame<B>,
+    area: &Rect,
+    game_state: &GameState,
+) -> Result<(), Box<dyn Error>>
+where
+    B: Backend,
+{
+    let block = Block::default()
+        .borders(Borders::NONE)
+        .border_style(Style::default().fg(Color::Yellow));
+
+    let data = match game_state {
+        GameState::INIT => "\n To start, press move key!",
+        GameState::PAUSED => "\n PAUSED",
+        GameState::DONE => "\n Excellent! Press 'r' to start new game!",
+        _ => "",
+    };
+
+    let text = [Text::styled(
+        data,
+        Style::default()
+            .fg(Color::Yellow)
+            .modifier(if game_state == &GameState::DONE {
+                Modifier::SLOW_BLINK
+            } else {
+                Modifier::empty()
+            }),
+    )];
     let paragraph = Paragraph::new(text.iter())
         .block(block)
         .alignment(Alignment::Left);

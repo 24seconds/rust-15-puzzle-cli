@@ -1,5 +1,80 @@
 use rand::{rngs::ThreadRng, seq::SliceRandom, Rng};
-use std::error::Error;
+use std::{error::Error, time::Instant};
+
+#[derive(PartialEq)]
+pub enum GameState {
+    INIT,
+    PLAYING,
+    PAUSED,
+    DONE,
+}
+
+pub fn handle_game_state(curren_state: &GameState, char: char, arr_state: &[u16; 16]) -> GameState {
+    match curren_state {
+        GameState::INIT => GameState::PLAYING,
+        GameState::PLAYING => {
+            let is_done = is_done(arr_state);
+
+            if char == 'p' {
+                GameState::PAUSED
+            } else if is_done {
+                GameState::DONE
+            } else {
+                GameState::PLAYING
+            }
+        }
+        GameState::PAUSED => GameState::PLAYING,
+        GameState::DONE => {
+            if char == 'r' {
+                GameState::INIT
+            } else {
+                GameState::DONE
+            }
+        }
+    }
+}
+
+pub fn update_elapsed_time(
+    game_state: &GameState,
+    next_game_state: &GameState,
+    base_time: u64,
+    start_time: &Instant,
+) -> u64 {
+    let mut updated_base_time = base_time;
+
+    eprintln!("\n-------------------------");
+
+    match game_state {
+        GameState::INIT => eprintln!("game_state : init"),
+        GameState::PLAYING => eprintln!("game_state : playing"),
+        GameState::PAUSED => eprintln!("game_state : pause"),
+        GameState::DONE => eprintln!("game_state : done"),
+    }
+
+    match next_game_state {
+        GameState::INIT => eprintln!("next_game_state : init"),
+        GameState::PLAYING => eprintln!("next_game_state : playing"),
+        GameState::PAUSED => eprintln!("next_game_state : pause"),
+        GameState::DONE => eprintln!("next_game_state : done"),
+    }
+
+    if game_state == &GameState::PLAYING
+        && (next_game_state == &GameState::PAUSED || next_game_state == &GameState::DONE)
+    {
+        updated_base_time = base_time + start_time.elapsed().as_secs();
+    }
+
+    eprintln!(
+        "base_time : {}, elapsed: {}",
+        base_time,
+        start_time.elapsed().as_secs()
+    );
+    eprintln!("updated_base_time : {}", updated_base_time);
+
+    eprintln!("-------------------------");
+
+    updated_base_time
+}
 
 pub fn is_state_same(arr1: [u16; 16], arr2: [u16; 16]) -> bool {
     for i in 0..arr1.len() {
@@ -144,6 +219,20 @@ pub fn move_tile(arr: &[u16; 16], operation: Operation) -> Result<[u16; 16], Box
     };
 
     Ok(next_arr)
+}
+
+fn is_done(arr_state: &[u16; 16]) -> bool {
+    let result = (0..16).into_iter().all(|x| {
+        if x == 15 {
+            arr_state[x as usize] == 0
+        } else {
+            x + 1 == arr_state[x as usize]
+        }
+    });
+
+    eprintln!("arr_state: {:?}, result : {}", &arr_state, result);
+
+    result
 }
 
 #[cfg(test)]
