@@ -64,7 +64,7 @@ where
             format!("\n{}", number)
         };
 
-        let text = [Text::styled(number_string, style_selected)];
+        let text = [Text::styled(number_string, style_selected.modifier(Modifier::BOLD))];
         let paragraph = Paragraph::new(text.iter())
             .block(block)
             .alignment(Alignment::Center);
