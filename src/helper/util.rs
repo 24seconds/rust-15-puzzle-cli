@@ -1,6 +1,16 @@
 use rand::{rngs::ThreadRng, seq::SliceRandom, Rng};
 use std::error::Error;
 
+pub fn is_state_same(arr1: [u16; 16], arr2: [u16; 16]) -> bool {
+    for i in 0..arr1.len() {
+        if arr1[i] != arr2[i] {
+            return false;
+        }
+    }
+
+    true
+}
+
 pub fn shuffle_arr(rng: &mut ThreadRng) -> Result<[u16; 16], Box<dyn Error>> {
     let mut arr = [0; 16];
 

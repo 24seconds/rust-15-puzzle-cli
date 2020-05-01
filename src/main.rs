@@ -1,5 +1,5 @@
 mod helper;
-use helper::{draw_board, move_tile, Event, Events, Operation};
+use helper::{draw_board, move_tile, Event, Events, Operation, is_state_same};
 
 use std::{error::Error, io, time::Instant};
 use termion::{event::Key, input::MouseTerminal, raw::IntoRawMode, screen::AlternateScreen};
@@ -60,7 +60,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .split(chunks[1]);
 
             {
-                let title_string = format!(" Time: {}s  Moves: {}", start_time.elapsed().as_secs(), &move_count);
+                let title_string = format!(
+                    " Time: {}s  Moves: {}",
+                    start_time.elapsed().as_secs(),
+                    &move_count
+                );
                 let title_string = title_string.as_str();
 
                 let block = Block::default()
@@ -101,20 +105,36 @@ fn main() -> Result<(), Box<dyn Error>> {
                     break;
                 }
                 Key::Char('w') | Key::Up => {
-                    arr_state = move_tile(&arr_state, Operation::UP)?;
-                    move_count += 1;
+                    let next_arr_state = move_tile(&arr_state, Operation::UP)?;
+
+                    if !is_state_same(arr_state, next_arr_state) {
+                        move_count += 1;
+                    }
+                    arr_state = next_arr_state;
                 }
                 Key::Char('a') | Key::Left => {
-                    arr_state = move_tile(&arr_state, Operation::LEFT)?;
-                    move_count += 1;
+                    let next_arr_state = move_tile(&arr_state, Operation::LEFT)?;
+
+                    if !is_state_same(arr_state, next_arr_state) {
+                        move_count += 1;
+                    }
+                    arr_state = next_arr_state;
                 }
                 Key::Char('s') | Key::Down => {
-                    arr_state = move_tile(&arr_state, Operation::DOWN)?;
-                    move_count += 1;
+                    let next_arr_state = move_tile(&arr_state, Operation::DOWN)?;
+
+                    if !is_state_same(arr_state, next_arr_state) {
+                        move_count += 1;
+                    }
+                    arr_state = next_arr_state;
                 }
                 Key::Char('d') | Key::Right => {
-                    arr_state = move_tile(&arr_state, Operation::RIGHT)?;
-                    move_count += 1;
+                    let next_arr_state = move_tile(&arr_state, Operation::RIGHT)?;
+
+                    if !is_state_same(arr_state, next_arr_state) {
+                        move_count += 1;
+                    }
+                    arr_state = next_arr_state;
                 }
                 Key::Char('r') => {
                     move_count = 0;
