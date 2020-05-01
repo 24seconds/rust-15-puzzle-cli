@@ -1,7 +1,7 @@
 mod helper;
 use helper::{
-    draw_board, draw_header, handle_game_state, is_state_same, move_tile, update_elapsed_time,
-    Event, Events, GameState, Operation,
+    draw_board, draw_header, handle_game_state, handle_move_operation, move_tile,
+    update_elapsed_time, Event, Events, GameData, GameState, Operation,
 };
 
 use std::{error::Error, io, time::Instant};
@@ -27,11 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let events = Events::new();
     let mut rng = rand::thread_rng();
 
-    let mut arr_state = helper::shuffle_arr(&mut rng)?;
-    let mut start_time = Instant::now();
-    let mut base_time = 0;
-    let mut move_count = 0;
-    let mut game_state = GameState::INIT;
+    let mut game_data = GameData::new(&mut rng);
 
     loop {
         terminal.draw(|mut f| {
@@ -70,31 +66,30 @@ fn main() -> Result<(), Box<dyn Error>> {
                         horizontal: 10,
                         vertical: 0,
                     }),
-                    &game_state,
+                    &game_data.game_state,
                 )
                 .unwrap();
             }
 
             {
-                let time = match game_state {
+                let time = match game_data.game_state {
                     GameState::INIT => {
-                        start_time = Instant::now();
+                        game_data.start_time = Instant::now();
 
                         0
                     }
-                    GameState::PLAYING => base_time + start_time.elapsed().as_secs(),
-                    GameState::PAUSED => {
-                        start_time = Instant::now();
-
-                        base_time
+                    GameState::PLAYING => {
+                        game_data.base_time + game_data.start_time.elapsed().as_secs()
                     }
-                    GameState::DONE => base_time,
+                    GameState::PAUSED => {
+                        game_data.start_time = Instant::now();
+
+                        game_data.base_time
+                    }
+                    GameState::DONE => game_data.base_time,
                 };
 
-                // let elapsed_time = start_time.elapsed().as_secs();
-                // let time = base_time + elapsed_time;
-
-                let title_string = format!(" Time: {}s  Moves: {}", time, &move_count);
+                let title_string = format!(" Time: {}s  Moves: {}", time, &game_data.move_count);
                 let title_string = title_string.as_str();
 
                 let block = Block::default()
@@ -104,7 +99,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 f.render_widget(block, chunks[1]);
 
                 draw_board(
-                    &arr_state,
+                    &game_data.arr_state,
                     &mut f,
                     &chunks[1].inner(&Margin {
                         horizontal: 1,
@@ -135,76 +130,31 @@ fn main() -> Result<(), Box<dyn Error>> {
                     break;
                 }
                 Key::Char('w') | Key::Up => {
-                    let next_arr_state = move_tile(&arr_state, Operation::UP)?;
-
-                    if !is_state_same(arr_state, next_arr_state) && game_state != GameState::DONE {
-                        move_count += 1;
-                        arr_state = next_arr_state;
-                    }
-
-                    let next_game_state = handle_game_state(&game_state, 'w', &arr_state);
-                    base_time =
-                        update_elapsed_time(&game_state, &next_game_state, base_time, &start_time);
-
-                    game_state = next_game_state;
+                    let next_arr_state = move_tile(&game_data.arr_state, Operation::UP)?;
+                    handle_move_operation(&mut game_data, next_arr_state, 'w');
                 }
                 Key::Char('a') | Key::Left => {
-                    let next_arr_state = move_tile(&arr_state, Operation::LEFT)?;
-
-                    if !is_state_same(arr_state, next_arr_state) && game_state != GameState::DONE {
-                        move_count += 1;
-                        arr_state = next_arr_state;
-                    }
-
-                    let next_game_state = handle_game_state(&game_state, 'a', &arr_state);
-                    base_time =
-                        update_elapsed_time(&game_state, &next_game_state, base_time, &start_time);
-
-                    game_state = next_game_state;
+                    let next_arr_state = move_tile(&game_data.arr_state, Operation::LEFT)?;
+                    handle_move_operation(&mut game_data, next_arr_state, 'a');
                 }
                 Key::Char('s') | Key::Down => {
-                    let next_arr_state = move_tile(&arr_state, Operation::DOWN)?;
-
-                    if !is_state_same(arr_state, next_arr_state) && game_state != GameState::DONE {
-                        move_count += 1;
-                        arr_state = next_arr_state;
-                    }
-
-                    let next_game_state = handle_game_state(&game_state, 's', &arr_state);
-                    base_time =
-                        update_elapsed_time(&game_state, &next_game_state, base_time, &start_time);
-
-                    game_state = next_game_state;
+                    let next_arr_state = move_tile(&game_data.arr_state, Operation::DOWN)?;
+                    handle_move_operation(&mut game_data, next_arr_state, 's');
                 }
                 Key::Char('d') | Key::Right => {
-                    let next_arr_state = move_tile(&arr_state, Operation::RIGHT)?;
-
-                    if !is_state_same(arr_state, next_arr_state) && game_state != GameState::DONE {
-                        move_count += 1;
-                        arr_state = next_arr_state;
-                    }
-
-                    let next_game_state = handle_game_state(&game_state, 'd', &arr_state);
-                    base_time =
-                        update_elapsed_time(&game_state, &next_game_state, base_time, &start_time);
-
-                    game_state = next_game_state;
+                    let next_arr_state = move_tile(&game_data.arr_state, Operation::RIGHT)?;
+                    handle_move_operation(&mut game_data, next_arr_state, 'd');
                 }
                 Key::Char('p') => {
-                    let next_game_state = handle_game_state(&game_state, 'p', &arr_state);
-                    base_time =
-                        update_elapsed_time(&game_state, &next_game_state, base_time, &start_time);
+                    let next_game_state = handle_game_state(&game_data, 'p');
 
-                    game_state = next_game_state;
+                    game_data.base_time = update_elapsed_time(&game_data, &next_game_state);
+                    game_data.game_state = next_game_state;
                 }
                 Key::Char('r') => {
-                    move_count = 0;
-                    start_time = Instant::now();
-                    base_time = 0;
-                    arr_state = helper::shuffle_arr(&mut rng)?;
-
-                    let next_game_state = handle_game_state(&game_state, 'r', &arr_state);
-                    game_state = next_game_state;
+                    game_data = GameData::new(&mut rng);
+                    let next_game_state = handle_game_state(&game_data, 'r');
+                    game_data.game_state = next_game_state;
                 }
                 _ => {}
             },

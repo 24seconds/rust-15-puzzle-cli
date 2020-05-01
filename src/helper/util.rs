@@ -9,7 +9,44 @@ pub enum GameState {
     DONE,
 }
 
-pub fn handle_game_state(curren_state: &GameState, char: char, arr_state: &[u16; 16]) -> GameState {
+pub struct GameData {
+    pub game_state: GameState,
+    pub move_count: i32,
+    pub base_time: u64,
+    pub arr_state: [u16; 16],
+    pub start_time: Instant,
+}
+
+impl GameData {
+    pub fn new(rng: &mut ThreadRng) -> Self {
+        GameData {
+            game_state: GameState::INIT,
+            move_count: 0,
+            base_time: 0,
+            arr_state: shuffle_arr(rng).unwrap(),
+            start_time: Instant::now(),
+        }
+    }
+}
+
+pub fn handle_move_operation(game_data: &mut GameData, next_arr_state: [u16; 16], key: char) {
+    if !is_state_same(game_data.arr_state, next_arr_state)
+        && game_data.game_state != GameState::DONE
+    {
+        game_data.move_count += 1;
+        game_data.arr_state = next_arr_state;
+    }
+
+    let next_game_state = handle_game_state(&game_data, key);
+
+    game_data.base_time = update_elapsed_time(&game_data, &next_game_state);
+    game_data.game_state = next_game_state;
+}
+
+pub fn handle_game_state(game_data: &GameData, char: char) -> GameState {
+    let curren_state = &game_data.game_state;
+    let arr_state = &game_data.arr_state;
+
     match curren_state {
         GameState::INIT => GameState::PLAYING,
         GameState::PLAYING => {
@@ -34,12 +71,11 @@ pub fn handle_game_state(curren_state: &GameState, char: char, arr_state: &[u16;
     }
 }
 
-pub fn update_elapsed_time(
-    game_state: &GameState,
-    next_game_state: &GameState,
-    base_time: u64,
-    start_time: &Instant,
-) -> u64 {
+pub fn update_elapsed_time(game_data: &GameData, next_game_state: &GameState) -> u64 {
+    let game_state = &game_data.game_state;
+    let base_time = game_data.base_time;
+    let start_time = &game_data.start_time;
+
     let mut updated_base_time = base_time;
 
     eprintln!("\n-------------------------");
@@ -76,7 +112,7 @@ pub fn update_elapsed_time(
     updated_base_time
 }
 
-pub fn is_state_same(arr1: [u16; 16], arr2: [u16; 16]) -> bool {
+fn is_state_same(arr1: [u16; 16], arr2: [u16; 16]) -> bool {
     for i in 0..arr1.len() {
         if arr1[i] != arr2[i] {
             return false;
@@ -86,7 +122,7 @@ pub fn is_state_same(arr1: [u16; 16], arr2: [u16; 16]) -> bool {
     true
 }
 
-pub fn shuffle_arr(rng: &mut ThreadRng) -> Result<[u16; 16], Box<dyn Error>> {
+fn shuffle_arr(rng: &mut ThreadRng) -> Result<[u16; 16], Box<dyn Error>> {
     let mut arr = [0; 16];
 
     (0..16).into_iter().enumerate().for_each(|args| {
