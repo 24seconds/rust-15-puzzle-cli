@@ -48,7 +48,13 @@ pub fn handle_game_state(game_data: &GameData, char: char) -> GameState {
     let arr_state = &game_data.arr_state;
 
     match curren_state {
-        GameState::INIT => GameState::PLAYING,
+        GameState::INIT => {
+            if ['w', 'a', 's', 'd'].contains(&char) {
+                GameState::PLAYING
+            } else {
+                GameState::INIT
+            }
+        }
         GameState::PLAYING => {
             let is_done = is_done(arr_state);
 
