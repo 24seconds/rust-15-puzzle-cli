@@ -1,7 +1,7 @@
 mod helper;
 use helper::{draw_board, move_tile, Event, Events, Operation};
 
-use std::{error::Error, io};
+use std::{error::Error, io, time::Instant};
 use termion::{event::Key, input::MouseTerminal, raw::IntoRawMode, screen::AlternateScreen};
 use tui::{
     backend::TermionBackend,
@@ -24,6 +24,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let events = Events::new();
 
     let mut arr_state = helper::shuffle_arr(&mut rand::thread_rng())?;
+    let mut vec_solve_move: Vec<Operation> = Vec::new();
+    let mut start_time = Instant::now();
+    let mut move_count = 0;
 
     loop {
         terminal.draw(|mut f| {
@@ -56,9 +59,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .split(chunks[1]);
 
             {
+                let title_string = format!(" Time: {}s  Moves: {}", start_time.elapsed().as_secs(), &move_count);
+                let title_string = title_string.as_str();
+
                 let block = Block::default()
                     .borders(Borders::NONE)
-                    .title(" Time: 23s  Moves: 15")
+                    .title(title_string)
                     .title_style(Style::default().modifier(Modifier::BOLD));
                 f.render_widget(block, chunks[1]);
 
@@ -95,15 +101,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
                 Key::Char('w') | Key::Up => {
                     arr_state = move_tile(&arr_state, Operation::UP)?;
+                    move_count += 1;
                 }
                 Key::Char('a') | Key::Left => {
                     arr_state = move_tile(&arr_state, Operation::LEFT)?;
+                    move_count += 1;
                 }
                 Key::Char('s') | Key::Down => {
                     arr_state = move_tile(&arr_state, Operation::DOWN)?;
+                    move_count += 1;
                 }
                 Key::Char('d') | Key::Right => {
                     arr_state = move_tile(&arr_state, Operation::RIGHT)?;
+                    move_count += 1;
                 }
                 _ => {}
             },
