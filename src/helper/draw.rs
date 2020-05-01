@@ -2,7 +2,7 @@ use std::error::Error;
 use tui::{
     backend::Backend,
     layout::{Alignment, Rect},
-    style::{Color, Style},
+    style::{Color, Modifier, Style},
     widgets::{Block, BorderType, Borders, Paragraph, Text},
     Frame,
 };
@@ -72,6 +72,34 @@ where
         frame.render_widget(paragraph, area);
         frame.render_widget(block, area);
     });
+
+    Ok(())
+}
+
+pub fn draw_guide<B>(frame: &mut Frame<B>, area: &Rect) -> Result<(), Box<dyn Error>>
+where
+    B: Backend,
+{
+    let guide = r#"    
+
+Commands 
+    Move: ↑,↓,←,→ or w,s,a,d
+    Quit : q
+    New game : r
+    Pause : p
+    Solve : g
+    "#;
+
+    let block = Block::default()
+        .borders(Borders::NONE)
+        .title("rust-15-puzzle : v0.1.0")
+        .title_style(Style::default().modifier(Modifier::BOLD));
+    let text = [Text::styled(guide, Style::default().fg(Color::LightBlue))];
+    let paragraph = Paragraph::new(text.iter())
+        .block(block)
+        .alignment(Alignment::Left);
+
+    frame.render_widget(paragraph, *area);
 
     Ok(())
 }

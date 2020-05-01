@@ -5,7 +5,9 @@ use std::{error::Error, io};
 use termion::{event::Key, input::MouseTerminal, raw::IntoRawMode, screen::AlternateScreen};
 use tui::{
     backend::TermionBackend,
-    layout::{Constraint, Direction, Layout},
+    layout::{Constraint, Direction, Layout, Margin},
+    style::{Color, Modifier, Style},
+    widgets::{Block, Borders},
     Terminal,
 };
 
@@ -25,13 +27,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     loop {
         terminal.draw(|mut f| {
-            let chunks = Layout::default()
+            let layout_chunks = Layout::default()
                 .direction(Direction::Vertical)
                 .constraints(
                     [
-                        Constraint::Percentage(10), // guide to user
-                        Constraint::Percentage(80), // main render
                         Constraint::Percentage(10),
+                        Constraint::Percentage(90), // main render
                     ]
                     .as_ref(),
                 )
@@ -39,20 +40,51 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             let chunks = Layout::default()
                 .direction(Direction::Horizontal)
-                .margin(5)
                 .constraints(
                     [
-                        Constraint::Percentage(10),
-                        Constraint::Percentage(80),
-                        Constraint::Percentage(10),
+                        Constraint::Length(10),
+                        Constraint::Length(40),
+                        Constraint::Min(0),
                     ]
                     .as_ref(),
                 )
+                .split(layout_chunks[1]);
+
+            let footer_chunks = Layout::default()
+                .direction(Direction::Vertical)
+                .constraints([Constraint::Length(23), Constraint::Min(0)].as_ref())
                 .split(chunks[1]);
 
             {
-                // let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
-                draw_board(&arr_state, &mut f, &chunks[1], 5).unwrap();
+                let block = Block::default()
+                    .borders(Borders::NONE)
+                    .title(" Time: 23s  Moves: 15")
+                    .title_style(Style::default().modifier(Modifier::BOLD));
+                f.render_widget(block, chunks[1]);
+
+                draw_board(
+                    &arr_state,
+                    &mut f,
+                    &chunks[1].inner(&Margin {
+                        horizontal: 1,
+                        vertical: 2,
+                    }),
+                    5,
+                )
+                .unwrap();
+            }
+
+            {
+                helper::draw_guide(&mut f, &chunks[2]).unwrap();
+            }
+
+            {
+                let footer = "🍺 Github: 24seconds/rust-15-puzzle-cli";
+                let block = Block::default()
+                    .borders(Borders::NONE)
+                    .border_style(Style::default().fg(Color::Yellow))
+                    .title(footer);
+                f.render_widget(block, footer_chunks[1]);
             }
         })?;
 
