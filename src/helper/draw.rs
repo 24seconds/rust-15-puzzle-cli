@@ -87,7 +87,6 @@ Commands
     Quit : q
     New game : r
     Pause : p
-    Solve : g
     "#;
 
     let block = Block::default()
