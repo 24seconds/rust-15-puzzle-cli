@@ -157,6 +157,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
                 _ => {}
             },
+            _ => {}
         }
     }
     Ok(())
