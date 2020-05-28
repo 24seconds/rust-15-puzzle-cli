@@ -48,8 +48,7 @@ where
         );
 
         let style_selected = Style::default().fg(if index as u16 + 1 == *number && *number != 0 {
-            // orange
-            Color::Rgb(232, 138, 69)
+            Color::Green
         } else {
             Color::White
         });
