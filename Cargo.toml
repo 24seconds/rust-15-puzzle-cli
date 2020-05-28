@@ -2,7 +2,16 @@
 name = "rust-15-puzzle-cli"
 version = "0.1.0"
 authors = ["24seconds <24crazyoung@gmail.com>"]
+description = """
+rust-15-puzzle-cli is 15puzzle terminal game written in Rust!
+"""
+homepage = "https://github.com/24seconds/rust-15-puzzle-cli"
+repository = "https://github.com/24seconds/rust-15-puzzle-cli"
+readme = "README.md"
+keywords = ["15-puzzle", "terminal-app"]
+categories = ["command-line-utilities", "games"]
 edition = "2018"
+license = "Beerware"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
