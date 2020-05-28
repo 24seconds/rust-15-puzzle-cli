@@ -1,6 +1,6 @@
 # 🧩 rust-15puzzle-cli
 
-`15 puzzle` terminal game written in Rust!
+[`15 puzzle`](https://en.wikipedia.org/wiki/15_puzzle) terminal game written in Rust!
 
 
 ### Demo
