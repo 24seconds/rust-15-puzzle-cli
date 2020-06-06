@@ -10,8 +10,13 @@
 
 #### Game playing screenshot
 
+
+### DarkMode
 <img src="./assets/rust-15-puzzle-playing.png" width="600">
 
+
+### LightMode
+<img src="./assets/rust-15-puzzle-lightmode.png" width="600">
 
 
 #### Finishing screenshot
