@@ -1,6 +1,6 @@
 [package]
 name = "rust-15-puzzle-cli"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["24seconds <24crazyoung@gmail.com>"]
 description = """
 rust-15-puzzle-cli is 15puzzle terminal game written in Rust!
