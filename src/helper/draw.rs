@@ -1,4 +1,4 @@
-use crate::helper::GameState;
+use crate::helper::{GameState, ThemeSystem};
 use std::error::Error;
 use tui::{
     backend::Backend,
@@ -13,6 +13,7 @@ pub fn draw_board<B>(
     frame: &mut Frame<B>,
     area: &Rect,
     length: u16,
+    theme_system: &ThemeSystem,
 ) -> Result<(), Box<dyn Error>>
 where
     B: Backend,
@@ -36,6 +37,10 @@ where
         (3, 3),
     ];
 
+    let color_tile_default_border = theme_system.get_color_tile_default_border();
+    let color_tile_text = theme_system.get_color_tile_text();
+    let color_tile_selected_border = theme_system.get_color_tile_selected_border();
+
     board.iter().zip(arr.iter()).enumerate().for_each(|x| {
         let (index, (multiplier, number)) = x;
         let width = length + 3;
@@ -48,9 +53,9 @@ where
         );
 
         let style_selected = Style::default().fg(if index as u16 + 1 == *number && *number != 0 {
-            Color::Green
+            color_tile_selected_border
         } else {
-            Color::White
+            color_tile_default_border
         });
 
         let block = Block::default()
@@ -66,7 +71,7 @@ where
 
         let text = [Text::styled(
             number_string,
-            style_selected.modifier(Modifier::BOLD),
+            style_selected.modifier(Modifier::BOLD).fg(color_tile_text),
         )];
         let paragraph = Paragraph::new(text.iter())
             .block(block)
@@ -90,13 +95,19 @@ Commands
     Quit : q
     New game : r
     Pause : p
+    Change ColorTheme: c
     "#;
 
     let block = Block::default()
         .borders(Borders::NONE)
         .title("rust-15-puzzle : v0.1.0")
         .title_style(Style::default().modifier(Modifier::BOLD));
-    let text = [Text::styled(guide, Style::default().fg(Color::LightBlue))];
+    let text = [Text::styled(
+        guide,
+        Style::default()
+            .fg(Color::LightBlue)
+            .modifier(Modifier::BOLD),
+    )];
     let paragraph = Paragraph::new(text.iter())
         .block(block)
         .alignment(Alignment::Left);
@@ -119,7 +130,9 @@ where
         .border_style(Style::default().fg(Color::Yellow));
 
     let data = match game_state {
-        GameState::INIT => "\n To start, press move key!",
+        GameState::INIT => {
+            "\n To start, press move key! \n If you can't see the board, press 'c' to change Theme!"
+        }
         GameState::PAUSED => "\n PAUSED",
         GameState::DONE => "\n Excellent! Press 'r' to start new game!",
         _ => "",
@@ -130,9 +143,9 @@ where
         Style::default()
             .fg(Color::Yellow)
             .modifier(if game_state == &GameState::DONE {
-                Modifier::SLOW_BLINK
+                Modifier::SLOW_BLINK | Modifier::BOLD
             } else {
-                Modifier::empty()
+                Modifier::empty() | Modifier::BOLD
             }),
     )];
     let paragraph = Paragraph::new(text.iter())

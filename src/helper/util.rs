@@ -1,5 +1,6 @@
 use rand::{rngs::ThreadRng, seq::SliceRandom};
 use std::{error::Error, time::Instant};
+use tui::style::Color;
 
 #[derive(PartialEq)]
 pub enum GameState {
@@ -248,6 +249,53 @@ fn is_done(arr_state: &[u16; 16]) -> bool {
     });
 
     result
+}
+
+pub enum ThemeMode {
+    LightMode,
+    DarkMode,
+}
+
+pub struct ThemeSystem {
+    mode: ThemeMode,
+}
+
+impl ThemeSystem {
+    pub fn new(mode: ThemeMode) -> ThemeSystem {
+        ThemeSystem { mode }
+    }
+
+    pub fn change_theme(self) -> ThemeSystem {
+        match self.mode {
+            ThemeMode::LightMode => ThemeSystem {
+                mode: ThemeMode::DarkMode,
+            },
+            ThemeMode::DarkMode => ThemeSystem {
+                mode: ThemeMode::LightMode,
+            },
+        }
+    }
+
+    pub fn get_color_tile_text(&self) -> Color {
+        match self.mode {
+            ThemeMode::LightMode => Color::Black,
+            ThemeMode::DarkMode => Color::White,
+        }
+    }
+
+    pub fn get_color_tile_default_border(&self) -> Color {
+        match self.mode {
+            ThemeMode::LightMode => Color::Black,
+            ThemeMode::DarkMode => Color::White,
+        }
+    }
+
+    pub fn get_color_tile_selected_border(&self) -> Color {
+        match self.mode {
+            ThemeMode::LightMode => Color::LightRed,
+            ThemeMode::DarkMode => Color::Green,
+        }
+    }
 }
 
 #[cfg(test)]

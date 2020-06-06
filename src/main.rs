@@ -1,7 +1,7 @@
 mod helper;
 use helper::{
     draw_board, draw_header, handle_game_state, handle_move_operation, move_tile,
-    update_elapsed_time, Event, Events, GameData, GameState, Operation,
+    update_elapsed_time, Event, Events, GameData, GameState, Operation, ThemeMode, ThemeSystem,
 };
 
 use std::{error::Error, io, time::Instant};
@@ -27,6 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut rng = rand::thread_rng();
 
     let mut game_data = GameData::new(&mut rng);
+    let mut theme_system = ThemeSystem::new(ThemeMode::DarkMode);
 
     loop {
         terminal.draw(|mut f| {
@@ -34,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .direction(Direction::Vertical)
                 .constraints(
                     [
-                        Constraint::Length(3),
+                        Constraint::Length(4),
                         Constraint::Min(0), // main render
                     ]
                     .as_ref(),
@@ -105,6 +106,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         vertical: 2,
                     }),
                     5,
+                    &theme_system,
                 )
                 .unwrap();
             }
@@ -154,6 +156,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                     game_data = GameData::new(&mut rng);
                     let next_game_state = handle_game_state(&game_data, 'r');
                     game_data.game_state = next_game_state;
+                }
+                Key::Char('c') => {
+                    theme_system = theme_system.change_theme();
                 }
                 _ => {}
             },
